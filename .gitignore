@@ -39,3 +39,13 @@ build/
 # OS specific
 .DS_Store
 Thumbs.db
+
+HELP.md
+
+.gitattributes
+
+.gitignore
+
+mvnw
+
+mvnw.cmd
