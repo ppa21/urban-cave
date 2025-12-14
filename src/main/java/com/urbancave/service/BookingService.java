@@ -9,6 +9,7 @@ import com.urbancave.repository.ServiceRepository;
 import com.urbancave.repository.ShiftRepository;
 import com.urbancave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingService {
     private final AppointmentRepository appointmentRepository;
     private final ShiftRepository shiftRepository;
@@ -29,12 +31,14 @@ public class BookingService {
     // finds all available time slots for a stylist on a specific date for a given service
     // walks through the shift in 30 minute intervals
     public List<LocalTime> getAvailableSlots(Long stylistId, Long serviceId, LocalDate date) {
+        log.info("Fetching available slots for stylist: {}, service: {}, date: {}", stylistId, serviceId, date);
         var service = serviceRepository.findById(serviceId).orElseThrow();
         int serviceDuration = service.getDuration(); // in minutes
 
         // checks to see if the stylist works on a specific date
         var stylistShift = shiftRepository.findByStylistIdAndDate(stylistId, date).orElse(null);
         if (stylistShift == null) {
+            log.warn("No shift found for stylist {} on date {}", stylistId, date);
             return List.of(); // if stylist is not working, return an empty list
         }
 
@@ -42,7 +46,8 @@ public class BookingService {
         List<LocalTime> freeSlots = new ArrayList<>();
         LocalTime currentSlotStart = stylistShift.getStartTime(); // instantiated to when stylist starts working and then incremented by 30 mins
 
-        // loop through all possible 30 minute time slots during the shift
+        // Walk through shift in 30-minute intervals
+        // Loop continues while a full appointment can fit before (or exactly at) shift end
         while (currentSlotStart.plusMinutes(serviceDuration).isBefore(stylistShift.getEndTime()) || currentSlotStart.plusMinutes(serviceDuration).equals(stylistShift.getEndTime())) {
             LocalTime slotStart = currentSlotStart;
             LocalTime slotEnd = currentSlotStart.plusMinutes(serviceDuration);

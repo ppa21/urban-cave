@@ -4,6 +4,7 @@ import com.urbancave.domain.Role;
 import com.urbancave.domain.Service;
 import com.urbancave.domain.Shift;
 import com.urbancave.domain.User;
+import com.urbancave.repository.AppointmentRepository;
 import com.urbancave.repository.ServiceRepository;
 import com.urbancave.repository.ShiftRepository;
 import com.urbancave.repository.UserRepository;
@@ -23,31 +24,43 @@ public class DataSeeder implements CommandLineRunner {
     private final UserRepository userRepo;
     private final ServiceRepository serviceRepo;
     private final ShiftRepository shiftRepo;
+    private final AppointmentRepository appointmentRepo;
 
     @Override
     public void run(String @NonNull ... args) {
-        if (serviceRepo.count() == 0) {
-            serviceRepo.save(new Service(null, "Men's Fade", new BigDecimal("35.00"), 45));
-            serviceRepo.save(new Service(null, "Beard Trim", new BigDecimal("20.00"), 30));
-        }
+        // --- WIPE AND RE-SEED DATA FOR DEVELOPMENT ---
+        // Delete in reverse order of creation to respect foreign key constraints
+        appointmentRepo.deleteAll();
+        shiftRepo.deleteAll();
+        userRepo.deleteAll();
+        serviceRepo.deleteAll();
 
-        if (userRepo.count() == 0) {
-            User john = userRepo.save(User.builder().name("John Barber").email("john@uc.com").role(Role.STYLIST).build());
+        // --- SEED SERVICES ---
+        serviceRepo.save(new Service(null, "Men's Fade", new BigDecimal("35.00"), 45));
+        serviceRepo.save(new Service(null, "Beard Trim", new BigDecimal("20.00"), 30));
 
-            // --- CUSTOM SCHEDULE GENERATION ---
-            LocalDate today = LocalDate.now();
+        // --- SEED USERS AND SHIFTS ---
+        User john = userRepo.save(User.builder().name("John Barber").email("john@uc.com").role(Role.STYLIST).build());
 
-            // 1. Works Today
-            createShift(john, today);
+        // --- CUSTOM SCHEDULE GENERATION ---
+        LocalDate today = LocalDate.now();
 
-            // 2. Works Tomorrow
-            createShift(john, today.plusDays(1));
+        // 1. Works Today
+        createShift(john, today);
 
-            // 3. Skip Day 2 (Day Off!)
+        // 2. Works Tomorrow
+        createShift(john, today.plusDays(1));
 
-            // 4. Works Day 3
-            createShift(john, today.plusDays(3));
-        }
+        // 3. Skip Day 2 (Day Off!)
+
+        // 4. Works Day 3, 4, 5
+        createShift(john, today.plusDays(3));
+        createShift(john, today.plusDays(4));
+        createShift(john, today.plusDays(5));
+
+        // 5. Works Day 6 and 7
+        createShift(john, today.plusDays(6));
+        createShift(john, today.plusDays(7));
     }
 
     private void createShift(User stylist, LocalDate date) {

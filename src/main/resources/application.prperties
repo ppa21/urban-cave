@@ -9,8 +9,9 @@ spring.datasource.password=password
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
-# Email (Local Development with MailHog for quick testing)
+# Email (Local Development with MailHog)
 spring.mail.host=localhost
 spring.mail.port=1025
+spring.mail.from=noreply@urbancave.com
 spring.mail.properties.mail.smtp.auth=false
 spring.mail.properties.mail.smtp.starttls.enable=false

@@ -19,13 +19,14 @@ public class NotificationService {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(appointment.getClientEmail());
+            message.setFrom("noreply@urbancave.com");
             message.setSubject("Urban Cave: Appointment Confirmed");
             message.setText(appointment.getClientName() + "'s Appointment with " +
                     appointment.getStylist().getName() + " is confirmed for " +
                     appointment.getStartTime());
             javaMailSender.send(message);
         } catch (Exception e) {
-            log.error("Email failed", e);
+            log.error("Email Failed", e.getCause());
         }
     }
 }
