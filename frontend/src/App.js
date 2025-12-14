@@ -16,6 +16,7 @@ function App() {
   const [msg, setMsg] = useState("");
   const [booking, setBooking] = useState(false);
 
+  // It runs ONCE when the app first loads
   useEffect(() => {
     axios.get(`${API}/services`).then(res => setServices(res.data));
     axios.get(`${API}/stylists`).then(res => setStylists(res.data));
