@@ -1,1 +1,0 @@
-git commit -m "chore: Stop tracking Maven wrapper files"
