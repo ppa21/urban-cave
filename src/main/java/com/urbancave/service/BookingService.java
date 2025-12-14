@@ -78,6 +78,7 @@ public class BookingService {
     }
 
     // create new appointment and send confirmation email
+    // if making an appointment fails, rollback the whole transaction
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
         var stylist = userRepository.findById(request.stylistId()).orElseThrow();
