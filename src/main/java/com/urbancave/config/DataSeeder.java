@@ -1,4 +1,4 @@
-package com.urbancave.conflig;
+package com.urbancave.config;
 
 import com.urbancave.domain.Role;
 import com.urbancave.domain.Service;
